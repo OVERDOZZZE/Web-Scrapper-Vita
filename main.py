@@ -1,14 +1,26 @@
 import threading
-from utils import loading_spinner, writer
-from scraper import product_scrapper, pages
+from config import Config
+from scrapper import Scrapper, FileManager
+from utils import ExcelWriter, Spinner
 
+class App:
+    def __init__(self):
+        self.settings = Config()
+        self.file_manager = FileManager(self.settings.PATH)
+        self.scrapper = Scrapper(self.settings, self.file_manager)
+        self.writer = ExcelWriter(self.settings.PATH)
+
+    def run(self):
+        stop_event = threading.Event()
+        spinner = Spinner(stop_event)
+        spinner_thread = threading.Thread(target=spinner.start)
+        spinner_thread.start()
+
+        self.writer.write(self.scrapper.scrapper())
+        
+        stop_event.set()
+        spinner_thread.join()
 
 if __name__ == '__main__':
-    stop_event = threading.Event()
-    spinner_thread = threading.Thread(target=loading_spinner, args=(stop_event,))
-    spinner_thread.start()
-
-    writer(parameter=product_scrapper, pages=pages)
+    App().run()
     
-    stop_event.set()
-    spinner_thread.join()
