@@ -8,24 +8,25 @@ class ExcelWriter:
         self.filepath = path / 'config' / 'data.xlsx'
 
     def write(self, data_generator):
-        book = xlsxwriter.Workbook(filename=self.filepath)
-        page = book.add_worksheet('Products')
-        headers = ['Name', 'Code', 'Image URL']
-        
-        for i, header in enumerate(headers):
-            page.write(0, i, header)
-
-        page.set_column('A:A', 20)
-        page.set_column('B:B', 20)
-        page.set_column('C:C', 50)
-
-        row = 1 
+        # book = xlsxwriter.Workbook(filename=self.filepath)
+        # page = book.add_worksheet('Products')
+        # headers = ['Name', 'Code', 'Image URL']
+        #
+        # for i, header in enumerate(headers):
+        #     page.write(0, i, header)
+        #
+        # page.set_column('A:A', 20)
+        # page.set_column('B:B', 20)
+        # page.set_column('C:C', 50)
+        #
+        # row = 1
         for product in data_generator:
-            for i in range(len(product)):
-                page.write(row, i, product[i])
-            row += 1
-
-        book.close()
+            pass
+            # for i in range(len(product)):
+            #     page.write(row, i, product[i])
+            # row += 1
+        #
+        # book.close()
     
 
 class Spinner:
