@@ -11,7 +11,7 @@ A modular, thread-safe Python scraper for extracting and downloading images acro
 ├── config.py             # Loads configuration from .env
 ├── main.py               # Entry point for scraping and export
 ├── scrapper.py           # Core scraping logic and controllers
-├── tests.py              # Placeholder for future unit tests
+├── tests.py              # Contains test versions of some project sturctures
 ├── utils.py              # Includes ExcelWriter and Spinner utilities
 ├── .gitignore            # Git ignored files and folders
 ├── README.md             # This file
@@ -51,8 +51,8 @@ A modular, thread-safe Python scraper for extracting and downloading images acro
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/image-scraper.git
-cd image-scraper
+git clone https://github.com/overdozzze/web-scrapper-vita.git
+cd Web-Scrapper-Vita
 ```
 
 ### 2. Create and Activate a Virtual Environment
@@ -85,6 +85,8 @@ LOGIN_URL=https://example.com/login
 BASE_URL=https://example.com
 LOGIN_USERNAME=your_username
 PASSWORD=your_password
+
+* Original web-site is now shown, contact me directly get the link
 ```
 
 ---
