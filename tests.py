@@ -58,28 +58,35 @@ class SessionManager:
         self.logger = logger
 
     def authenticate(self):
-        response = self.session.get(self.config.base_url, headers=self.headers)
-        soup = bs(response.text, 'lxml')
-        csrftoken = soup.find('form').find('input').get('value')
-        self.logger.info("CSRF token retrieved")
+        try:
+            response = self.session.get(self.config.base_url, headers=self.headers)
+            soup = bs(response.text, 'lxml')
+            csrftoken = soup.find('form').find('input').get('value')
+            self.logger.info("CSRF token retrieved")
 
-        payload = {
-            'username': self.config.username,
-            'password': self.config.password,
-            'csrfmiddlewaretoken': csrftoken
-        }
-        self.headers.update({
-            'X-CSRF-Token': csrftoken,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Referer': self.config.login_url
-        })
+            payload = {
+                'username': self.config.username,
+                'password': self.config.password,
+                'csrfmiddlewaretoken': csrftoken
+            }
+            self.headers.update({
+                'X-CSRF-Token': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer': self.config.login_url
+            })
 
-        login_response = self.session.post(self.config.login_url, data=payload, headers=self.headers, allow_redirects=True)
-        soup = bs(login_response.text, 'lxml')
-        pages = int(soup.find('span', class_='pagination-info').text.split()[-1])
-        self.logger.info(f"Authentication successful, found {pages} pages")
-        
-        return pages
+            login_response = self.session.post(self.config.login_url, data=payload, headers=self.headers, allow_redirects=True)
+            soup = bs(login_response.text, 'lxml')
+            pages = int(soup.find('span', class_='pagination-info').text.split()[-1])
+
+            if not pages:
+                soup.select_one('span', class_='pagination-info')
+
+            self.logger.info(f"Authentication successful, found {pages} pages")
+            
+            return pages
+        except Exception as e:
+            self.logger.error(f'Error {e} when trying to authenticate')
 
 
 class ImageExtractor:
@@ -88,15 +95,17 @@ class ImageExtractor:
         self.logger = logger
 
     def extract_urls(self, url: str) -> Generator[str, None, None]:
-        page_response = self.session_manager.session.get(url, headers=self.session_manager.headers)
-        page_soup = bs(page_response.text, 'lxml')
-        current_img = page_soup.find('img')
+        try:
+            page_response = self.session_manager.session.get(url, headers=self.session_manager.headers)
+            page_soup = bs(page_response.text, 'lxml')
 
-        while current_img:
-            img_src = current_img.get('src')
-            if img_src:
-                yield img_src
-            current_img = current_img.find_next('img')
+            for img_tag in page_soup.find_all('img'):
+                img_src = img_tag.get('src')
+                if img_src:
+                    yield img_src
+                                
+        except Exception as e:
+            self.logger.error(f'Error {e} when trying to extract urls')
 
 
 class ImageDownloader:
@@ -107,13 +116,16 @@ class ImageDownloader:
         self.logger = logger
 
     def download(self, img_url):
-        filename = self.image_dir / f'{uuid.uuid4()}.jpg'
-        image_response = self.session_manager.session.get(img_url, stream=True, timeout=60)
-        with self.lock:
-            with open(filename, 'wb') as file:
-                for chunk in image_response.iter_content(1024 * 1024):
-                    file.write(chunk)
-        self.logger.info(f"Downloaded {img_url}")
+        try:
+            filename = self.image_dir / f'{uuid.uuid4()}.jpg'
+            image_response = self.session_manager.session.get(img_url, stream=True, timeout=60)
+            with self.lock:
+                with open(filename, 'wb') as file:
+                    for chunk in image_response.iter_content(1024 * 1024):
+                        file.write(chunk)
+            self.logger.info(f"Downloaded {img_url}")
+        except Exception as e:
+            self.logger.error(f'Error {e} when trying to download image')
 
 
 class ScraperController:
