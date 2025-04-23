@@ -10,5 +10,5 @@ class Config:
     user_agent = config("USER_AGENT")
     page = 1
     time_sleep = 3
-    PATH = Path.home() / 'OneDrive' / 'Рабочий стол' / 'SCRAPPING' / 'Vita_Scrapper'
+    PATH = Path.home() / 'OneDrive' / 'Рабочий стол' / 'Scrapping' / 'Vita_Scrapper'
 

@@ -21,6 +21,7 @@ class App:
         stop_event.set()
         spinner_thread.join()
 
+
 if __name__ == '__main__':
     App().run()
     
