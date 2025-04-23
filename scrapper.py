@@ -68,3 +68,5 @@ class Scrapper:
                 self.file_manager.image_loader(image_url)
 
                 yield name, code, image_url
+
+

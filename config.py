@@ -1,6 +1,7 @@
 from decouple import config
 from pathlib import Path
 
+
 class Config:
     base_url = config('BASE_URL')
     login_url = config('LOGIN_URL')
