@@ -5,7 +5,7 @@ import lxml
 from pathlib import Path
 import threading
 import time
-from config import Config
+from typing import Generator
 
 
 class ConfigLoader:
@@ -51,7 +51,7 @@ class ImageExtractor:
     def __init__(self, session_manager: SessionManager):
         self.session_manager = session_manager
 
-    def extract_urls(self, url):
+    def extract_urls(self, url: str) -> Generator[str, None, None]:
         page_response = self.session_manager.session.get(url, headers=self.session_manager.headers)
         page_soup = bs(page_response.text, 'lxml')
         current_img = page_soup.find('img')
