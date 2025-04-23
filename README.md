@@ -1,142 +1,146 @@
-```markdown
-# 🕷️ Multithreaded Image Scraper & Data Extractor
+# 🕸️ Multithreaded Web Image Scraper with Excel Export
 
-A fully modular, multithreaded, and production-ready web scraping system in Python. It is designed to **log in to a website**, **extract paginated image content**, **download images concurrently**, and **log all activity** while also **exporting structured product data to Excel**.
-
-> ⚙️ Designed for extensibility, performance, and clarity.
+A modular, thread-safe Python scraper for extracting and downloading images across multiple paginated web pages. Features include session-based login with CSRF protection, multithreaded image downloading with progress logging, and structured Excel export for metadata. Designed with extensibility and clarity in mind.
 
 ---
 
-## 📌 Features
-
-✅ Authenticated scraping with CSRF token support  
-✅ Thread-safe image downloading with locking and semaphores  
-✅ Pagination-aware URL generation  
-✅ Real-time console logging + log file creation  
-✅ Config-based architecture using `.env` for credentials  
-✅ Structured data export to Excel via `xlsxwriter`  
-✅ CLI loading spinner for user feedback
-
----
-
-## 📁 Project Structure
+## 📂 Project Structure
 
 ```
 .
-├── scrapper/                # Core scraping logic
-│   ├── config.py            # Configuration loader
-│   ├── session_manager.py   # Login and session management
-│   ├── extractor.py         # Image URL extraction logic
-│   ├── downloader.py        # Image downloader using threading
-│   ├── controller.py        # Central runner with thread orchestration
-│
-├── utils/                   # Utility tools
-│   ├── excel_writer.py      # Excel export handler
-│   ├── spinner.py           # CLI spinner
-│
-├── logs.txt                 # Output log file
-├── .env                     # Configuration secrets
-├── requirements.txt         # Python dependencies
-└── README.md                # Project documentation
+├── config.py             # Loads configuration from .env
+├── main.py               # Entry point for scraping and export
+├── scrapper.py           # Core scraping logic and controllers
+├── tests.py              # Placeholder for future unit tests
+├── utils.py              # Includes ExcelWriter and Spinner utilities
+├── .gitignore            # Git ignored files and folders
+├── README.md             # This file
+
+└── config/
+    ├── .env.sample       # Environment variable template
+    ├── data.xlsx         # Exported Excel data
+    ├── requirements.txt  # Python dependencies
 ```
 
 ---
 
-## 🔧 Setup Instructions
+## 🚀 Features
 
-1. **Clone the repository**
+- **🔐 Authenticated Session Handling**  
+  Automatically logs into the website using CSRF-secured forms.
+
+- **🧵 Multithreaded Download Engine**  
+  Efficiently downloads images concurrently using `threading` and `Semaphore`.
+
+- **📄 Excel Export**  
+  Exports structured image metadata into a formatted `.xlsx` file using `xlsxwriter`.
+
+- **📦 Modular & Extensible Architecture**  
+  Clear separation of responsibilities via `SessionManager`, `ImageExtractor`, `ImageDownloader`, and `ScraperController`.
+
+- **🪵 Robust Logging**  
+  Dual-output logger with both file and console logging (`CustomLogger`).
+
+- **⏳ Terminal Spinner**  
+  CLI spinner feedback during long-running tasks (`Spinner` utility).
+
+---
+
+## ⚙️ Setup & Installation
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/yourusername/image-scraper.git
 cd image-scraper
 ```
 
-2. **Create and activate virtual environment**
+### 2. Create and Activate a Virtual Environment
 
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate    # On Windows: venv\Scripts\activate
 ```
 
-3. **Install dependencies**
+### 3. Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 ```
 
-4. **Configure your `.env` file**
+### 4. Configure Environment Variables
+
+Copy the sample config:
+
+```bash
+cp config/.env.sample .env
+```
+
+Then, fill in your credentials and URLs in `.env`:
 
 ```env
-USER_AGENT=your_user_agent
-BASE_URL=https://example.com
-LOGIN_URL=https://example.com/login
+USER_AGENT=your-user-agent
 PAGE_URL=https://example.com/page=
+LOGIN_URL=https://example.com/login
+BASE_URL=https://example.com
 LOGIN_USERNAME=your_username
 PASSWORD=your_password
 ```
 
 ---
 
-## 🚀 Running the App
+## 🧪 Running the Scraper
+
+### From Command Line:
 
 ```bash
-python controller.py
+python main.py
 ```
 
 This will:
-- Log in to the website
-- Extract image URLs from each page
-- Download all images concurrently to `_images/`
-- Export product data to `config/data.xlsx`
-- Output logs to `logs.txt`
+
+1. Authenticate and retrieve the total number of paginated pages.
+2. Start multiple threads (configurable) to download images.
+3. Log all activity into `logs.txt`.
+4. Save image metadata into `config/data.xlsx`.
 
 ---
 
-## 📊 Excel Output Example
+## 🔍 Example Log Output
 
-Your extracted data is saved as an Excel file with the following structure:
-
-| Name       | Code     | Image URL                 |
-|------------|----------|---------------------------|
-| Product 1  | #A32KLS  | https://example.com/1.jpg |
-| Product 2  | #8FJK1D  | https://example.com/2.jpg |
-
----
-
-## 🧠 Tech Stack
-
-- `requests` + `BeautifulSoup4` — HTTP & HTML parsing
-- `threading`, `Lock`, `Semaphore` — Concurrency
-- `uuid`, `pathlib` — Unique filenames and platform-safe paths
-- `xlsxwriter` — Excel export
-- `decouple` — Secure configuration management
+```
+2025-04-23 01:45:23 - Thread-1 - INFO - Started downloading from https://example.com/page=1
+2025-04-23 01:45:24 - Thread-1 - INFO - Downloaded https://example.com/images/img1.jpg
+2025-04-23 01:45:25 - Thread-1 - INFO - Finished downloading from https://example.com/page=1
+```
 
 ---
 
-## 💡 Design Philosophy
+## 🧰 Extending Functionality
 
-This scraper is structured with **scalability and reusability** in mind. You can easily adapt it to:
-- Extract other types of content (e.g., text, metadata)
-- Integrate with databases or cloud storage
-- Convert it to use `asyncio + aiohttp` for async scraping
-
----
-
-## 📌 Future Enhancements
-
-- 🔄 Replace `threading` with `asyncio` for I/O-bound performance
-- 💾 Add support for SQLite/CSV exports
-- 📸 Use `Pillow` for validating image formats after download
-- 🛡️ Retry logic & CAPTCHA detection bypass
+- ➕ Add image metadata scraping (e.g., `alt`, dimensions).
+- ➕ Implement retry logic on download failures.
+- 🔄 Switch to `asyncio` + `aiohttp` for IO-bound performance boost.
+- 🧪 Write tests in `tests.py` using `unittest` or `pytest`.
 
 ---
 
-## 🧑‍💻 Author
+## 🧹 Cleanup & Maintenance
 
-**Nurdan**  
-Data Science undergraduate @ University of Manitoba  
-💼 Career goal: Machine Learning Engineer  
-📫 Contact: [your email or GitHub profile]
+Make sure to `.gitignore` any sensitive or generated files. This project already ignores:
+
+```bash
+venv/
+.env
+__pycache__/
+*.log
+config/data.xlsx
+```
 
 ---
 
+## 👨‍💻 Author
+
+**Nurdan** – Data Science student and aspiring Machine Learning Engineer  
+📍 Winnipeg, Canada  
+🧠 Python | Web Scraping | Multithreading | Data Analytics  
