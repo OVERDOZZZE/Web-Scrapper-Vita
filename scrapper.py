@@ -55,7 +55,7 @@ class Scrapper:
         for page in range(1, self.pages + 1):
             time.sleep(self.settings.time_sleep)
             url = self.settings.page_url + str(page)
-
+            # comment
             response = self.session.get(url, headers=self.headers)
             soup = bs(response.text, 'lxml')
             product_data = soup.find_all('div', class_='product-card')
